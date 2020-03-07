@@ -1,0 +1,6 @@
+dependencies:
+- name: proxyinjector
+  repository: https://raw.githubusercontent.com/CloudVE/helm-charts/master
+  version: v0.0.23
+digest: sha256:f6d80c283e756b7096cbafcbf7830a52fd3fad34f1c40aee0d77ead40007f493
+generated: "2020-05-28T19:09:11.806761-04:00"

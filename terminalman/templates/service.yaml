@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "terminalman.fullname" . }}
+  name: {{ include "terminalman.fullname" . }}-service
   labels:
     {{- include "terminalman.labels" . | nindent 4 }}
 spec:

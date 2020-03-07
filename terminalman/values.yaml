@@ -75,3 +75,23 @@ oidc:
   client_id: "terminalman"
   client_secret: "some_secret"
   discovery_url: "http://cloudman-keycloak-http.cloudman.svc.cluster.local/auth/realms/master"
+
+persistence:
+  enabled: true
+  name: terminalman-pvc
+  # annotations: {}
+  storageClass: ""
+  # existingClaim:
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  mountPath: /home/terminalman
+
+# extraVolumes:
+#   - name: shared-data
+#     persistentVolumeClaim:
+#       claimName: shared-data-pvc
+
+# extraVolumeMounts:
+#   - name: shared-data
+#     mountPath: /opt/project/shared-data
+

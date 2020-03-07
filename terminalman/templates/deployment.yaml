@@ -6,13 +6,13 @@ metadata:
     {{- include "terminalman.labels" . | nindent 4 }}
   annotations:
     authproxy.stakater.com/enabled: "true"
-    authproxy.stakater.com/source-service-name: {{ .Release.Name }}-terminalman
+    authproxy.stakater.com/source-service-name: {{ .Release.Name }}-service
     authproxy.stakater.com/upstream-url: "http://localhost:7681/"
     authproxy.stakater.com/client-id: {{ .Values.oidc.client_id }}
     authproxy.stakater.com/client-secret: {{ .Values.oidc.client_secret }}
     authproxy.stakater.com/listen: ":80"
     authproxy.stakater.com/discovery-url: {{ tpl .Values.oidc.discovery_url . }}
-    authproxy.stakater.com/oauth-uri: "/terminalman/oauth"
+    authproxy.stakater.com/oauth-uri: "{{ index (index .Values.ingress.hosts 0).paths 0 }}/oauth"
     # authproxy.stakater.com/verbose: "true"
     authproxy.stakater.com/gatekeeper-image: keycloak/keycloak-gatekeeper:7.0.0
 {{- with .Values.annotations }}
@@ -42,6 +42,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           command: ['ttyd', '--base-path', '{{ index (index .Values.ingress.hosts 0).paths 0 }}', 'bash']
+          workingDir: {{ .Values.persistence.mountPath }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -60,6 +61,24 @@ spec:
               port: 80
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: terminalman-data
+              mountPath: {{ .Values.persistence.mountPath }}
+              subPath: terminalman
+            {{- if .Values.extraVolumeMounts }}
+            {{- .Values.extraVolumeMounts | toYaml | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: terminalman-data
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ template "terminalman.pvcname" . }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        {{- if .Values.extraVolumes }}
+        {{- .Values.extraVolumes | toYaml | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -61,3 +61,15 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Return which PVC to use
+*/}}
+{{- define "terminalman.pvcname" -}}
+{{- if .Values.persistence.existingClaim -}}
+{{- printf "%s" .Values.persistence.existingClaim -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Name .Values.persistence.name -}}
+{{- end -}}
+{{- end -}}
+
